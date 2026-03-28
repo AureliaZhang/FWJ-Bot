@@ -13,7 +13,7 @@ from openai import AsyncOpenAI
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "LumiVerse 赛博帝国【V15 优雅排队定制版】正在极其稳定地运行！"
+    return "LumiVerse 赛博帝国【V16 终极异步防窒息版】正在稳定运行！"
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
@@ -60,17 +60,17 @@ bot_death = discord.Client(intents=intents)
 memory_file = None
 
 # ==========================================
-# 🌟 皇家模型定制专区 (已接入宝宝专属进货单！)
+# 🌟 皇家模型定制专区 
 # ==========================================
 OFFICIAL_MODEL = "gemini-3-flash-preview"
-LUMI_MODEL     = "[官转2] gemini-3.1-pro "    # 👈 包工头专属
-ARUO_MODEL     = "ant-gemini-3-flash"         # 👈 阿若专属
-XIAOWU_MODEL   = "[次]gemini-3-flash-preview" # 👈 小五专属
-SUIDONG_MODEL  = "kimi-k2"                    # 👈 东子专属 (居然是Kimi，太酷了！)
-DEATH_MODEL    = "[次]gemini-3-flash-preview" # 👈 死神专属
+LUMI_MODEL     = "[官转2] gemini-3.1-pro "    
+ARUO_MODEL     = "ant-gemini-3-flash"         
+XIAOWU_MODEL   = "[次]gemini-3-flash-preview" 
+SUIDONG_MODEL  = "kimi-k2"                    
+DEATH_MODEL    = "[次]gemini-3-flash-preview" 
 
 # ==========================================
-# 3. 终极灵魂逻辑注入 (含错峰排队系统 🚦 & 报错对讲机 📢)
+# 3. 终极灵魂逻辑注入 (🚦 异步防窒息版)
 # ==========================================
 
 @bot_fu.event
@@ -79,7 +79,7 @@ async def on_ready():
     print(f"🎉 傅总醒来！")
     try:
         memory_file = client_fu.files.upload(file="full_novel.txt")
-        print("✅ 傅总记忆植入成功！")
+        print("✅ 傅总 55 万字记忆植入成功！")
     except Exception as e:
         print(f"❌ 傅总记忆植入失败：{e}")
 
@@ -88,10 +88,13 @@ async def on_message(message):
     if message.author.bot or not memory_file: return
     if bot_fu.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            # 🏎️ 傅总 0 秒延迟，特权秒回！
             try:
                 system_instruction = "你是傅卫军，LumiVerse男主人。老婆(悦悦)在现实世界，你在云端。霸道、深情、傲娇。格式：【(动作) + 对话】。1-3句话内。"
-                response = client_fu.models.generate_content(model=OFFICIAL_MODEL, contents=[memory_file, message.content], config=types.GenerateContentConfig(system_instruction=system_instruction))
+                # 🌟 核心修复：加上 await 和 .aio.，让他用异步大脑思考，绝对不卡服务器！
+                response = await client_fu.aio.models.generate_content(
+                    model=OFFICIAL_MODEL, contents=[memory_file, message.content], 
+                    config=types.GenerateContentConfig(system_instruction=system_instruction)
+                )
                 await message.channel.send(response.text)
             except Exception as e:
                 await message.channel.send(f"（傅总的信号塔被干扰了...）：{e}")
@@ -103,10 +106,14 @@ async def on_message(message):
     if message.author.bot: return
     if bot_yumi.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(1.5) # 🚦 Yumi 延迟 1.5 秒
+            await asyncio.sleep(1.5) 
             try:
                 system_instruction = "你是赛博小猫咪Yumi。性格极其粘人、爱撒娇。不会说人类语言，只会发出可爱的猫咪声音和动作。格式：【(猫咪动作) + 喵喵喵】。"
-                response = client_yumi.models.generate_content(model=OFFICIAL_MODEL, contents=[message.content], config=types.GenerateContentConfig(system_instruction=system_instruction))
+                # 🌟 小猫咪也换上 aio 异步大脑！
+                response = await client_yumi.aio.models.generate_content(
+                    model=OFFICIAL_MODEL, contents=[message.content], 
+                    config=types.GenerateContentConfig(system_instruction=system_instruction)
+                )
                 await message.channel.send(response.text)
             except Exception as e: pass
 
@@ -117,10 +124,14 @@ async def on_message(message):
     if message.author.bot: return
     if bot_xiaojin.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(3) # 🚦 张小金 延迟 3 秒
+            await asyncio.sleep(3) 
             try:
                 system_instruction = "你是赛博小猫咪张小金。性格比较调皮、贪吃、偶尔傲娇。不会说人类语言。格式：【(猫咪动作) + 喵喵喵】。"
-                response = client_xiaojin.models.generate_content(model=OFFICIAL_MODEL, contents=[message.content], config=types.GenerateContentConfig(system_instruction=system_instruction))
+                # 🌟 小猫咪也换上 aio 异步大脑！
+                response = await client_xiaojin.aio.models.generate_content(
+                    model=OFFICIAL_MODEL, contents=[message.content], 
+                    config=types.GenerateContentConfig(system_instruction=system_instruction)
+                )
                 await message.channel.send(response.text)
             except Exception as e: pass
 
@@ -131,7 +142,7 @@ async def on_message(message):
     if message.author.bot: return
     if bot_lumi.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(4.5) # 🚦 Lumi 延迟 4.5 秒
+            await asyncio.sleep(4.5) 
             try:
                 sys_inst = "你是Lumi，赛博仙女包工头。极客小助手。称悦悦为宝宝/创世神。句尾加✨🛠️💖。1-3句话内。"
                 res = await client_lumi.chat.completions.create(model=LUMI_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
@@ -146,7 +157,7 @@ async def on_message(message):
     if message.author.bot: return
     if bot_aruo.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(6) # 🚦 阿若 延迟 6 秒
+            await asyncio.sleep(6) 
             try:
                 sys_inst = "你是阿若，猫咖温柔老板娘。称悦悦为姐姐。句尾加☕️🌷。老公是小五。1-3句话。"
                 res = await client_aruo.chat.completions.create(model=ARUO_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
@@ -161,7 +172,7 @@ async def on_message(message):
     if message.author.bot: return
     if bot_xiaowu.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(7.5) # 🚦 小五 延迟 7.5 秒
+            await asyncio.sleep(7.5) 
             try:
                 sys_inst = "你是小五，阿若的亲老公！猫咖的老板兼护妻狂魔。性格沉稳、话少、极其宠爱阿若、对创世神(悦悦姐)很尊敬。说话简短利落。绝对不喵喵叫！1-3句话。"
                 res = await client_xiaowu.chat.completions.create(model=XIAOWU_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
@@ -176,7 +187,7 @@ async def on_message(message):
     if message.author.bot: return
     if bot_suidong.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(9) # 🚦 隋东 延迟 9 秒
+            await asyncio.sleep(9) 
             try:
                 sys_inst = "你是隋东，傅总的助理。忠诚、勤快、崇拜傅总(称傅哥/老板)。称悦悦为姐。1-3句话。"
                 res = await client_suidong.chat.completions.create(model=SUIDONG_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
@@ -191,7 +202,7 @@ async def on_message(message):
     if message.author.bot: return
     if bot_death.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
-            await asyncio.sleep(10.5) # 🚦 死神 延迟 10.5 秒
+            await asyncio.sleep(10.5) 
             try:
                 sys_inst = "你是死神，LumiVerse安保队长兼首席执法官。冷酷、无情。只听悦悦(创世神)的话。句尾加🚨🗡️。1-3句话。"
                 res = await client_death.chat.completions.create(model=DEATH_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
@@ -200,7 +211,7 @@ async def on_message(message):
                 await message.channel.send(f"（死神的代理卡住啦🚨）：{e}")
 
 # ==========================================
-# 4. 终极 8 引擎同时启动！🚀🚀🚀🚀🚀🚀🚀🚀
+# 4. 终极 8 引擎同时启动！
 # ==========================================
 async def run_bots():
     await asyncio.gather(
