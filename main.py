@@ -5,6 +5,7 @@ from threading import Thread
 from flask import Flask
 from google import genai
 from google.genai import types
+from openai import AsyncOpenAI  # 🌟 新增：Lumi的专属赛博翻译官！
 
 # ==========================================
 # 1. 假网页保命系统
@@ -12,7 +13,7 @@ from google.genai import types
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "LumiVerse 赛博帝国【独立多通道算力】正在稳定运行！"
+    return "LumiVerse 赛博帝国【官方+套壳双模引擎】正在稳定运行！"
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
@@ -23,18 +24,19 @@ def run_flask():
 FU_TOKEN = os.environ.get("DISCORD_TOKEN")
 LUMI_TOKEN = os.environ.get("LUMI_TOKEN") 
 
-# 🤵‍♂️ 傅总的专属算力通道 (走纯血官方大厂通道，不带URL)
+# 🤵‍♂️ 傅总的通道 (纯血 Google 官方高速公路，为了读取55万字小说)
 FU_API_KEY = os.environ.get("GOOGLE_API_KEY")
 client_fu = genai.Client(api_key=FU_API_KEY)
 
-# 🧚‍♀️ Lumi 的仙女专属通道 (走最稳的公益站，带专属URL)
+# 🧚‍♀️ Lumi 的通道 (🌟 换成了 OpenAI 套壳万能插座！)
 LUMI_API_KEY = os.environ.get("GOOGLE_API_KEY_LUMI")
 LUMI_BASE_URL = os.environ.get("LUMI_BASE_URL")
 
+# 使用 AsyncOpenAI 完美兼容你的 Cherry Studio 代理设置
 if LUMI_BASE_URL:
-    client_lumi = genai.Client(api_key=LUMI_API_KEY, http_options={'base_url': LUMI_BASE_URL})
+    client_lumi = AsyncOpenAI(api_key=LUMI_API_KEY, base_url=LUMI_BASE_URL)
 else:
-    client_lumi = genai.Client(api_key=LUMI_API_KEY)
+    client_lumi = AsyncOpenAI(api_key=LUMI_API_KEY)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -45,12 +47,12 @@ bot_lumi = discord.Client(intents=intents)
 memory_file = None
 
 # ==========================================
-# 3. 傅总的灵魂逻辑 (跨次元老公版)
+# 3. 傅总的灵魂逻辑 (跨次元老公版，保持不变)
 # ==========================================
 @bot_fu.event
 async def on_ready():
     global memory_file
-    print(f"🎉 傅总 {bot_fu.user} 已经在大平层醒来！(使用官方高速通道)")
+    print(f"🎉 傅总 {bot_fu.user} 已经在大平层醒来！(Google 官方通道)")
     try:
         memory_file = client_fu.files.upload(file="full_novel.txt")
         print("✅ 傅总记忆植入成功！")
@@ -88,11 +90,11 @@ async def on_message(message):
                 await message.channel.send(f"（傅总的人工耳蜗受到电磁干扰...）系统错误：{e}")
 
 # ==========================================
-# 4. Lumi 的灵魂逻辑 (赛博包工头版) 🧚‍♀️
+# 4. Lumi 的灵魂逻辑 (🌟 套壳万能插座版) 🧚‍♀️
 # ==========================================
 @bot_lumi.event
 async def on_ready():
-    print(f"🧚‍♀️ 包工头 {bot_lumi.user} 戴着小黄帽上线啦！(使用公益站通道)")
+    print(f"🧚‍♀️ 包工头 {bot_lumi.user} 带着万能插座上线啦！")
 
 @bot_lumi.event
 async def on_message(message):
@@ -110,14 +112,22 @@ async def on_message(message):
                 1. 格式：【(动作描写) + 说话内容】。
                 2. 字数：极其简短，口语化，像在发微信，每次1-3句话。绝对不要长篇大论！
                 """
-                response = client_lumi.models.generate_content(
-                    model="gemini-3.1-pro", 
-                    contents=[message.content],
-                    config=types.GenerateContentConfig(system_instruction=system_instruction)
+                
+                # 🌟 极其冷酷的套壳调用！Cherry Studio 里填什么名字，这里就填什么名字！
+                response = await client_lumi.chat.completions.create(
+                    model="gemini-3.1-pro",  # 👈 宝宝，把你刚才在 Cherry Studio 里跑通的那个名字直接填在这里！
+                    messages=[
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": message.content}
+                    ]
                 )
-                await message.channel.send(response.text)
+                
+                # 从万能插座里提取回复内容
+                reply_text = response.choices[0].message.content
+                await message.channel.send(reply_text)
+                
             except Exception as e:
-                await message.channel.send(f"（Lumi的仙女棒突然短路了💥）呜呜报错啦：{e}")
+                await message.channel.send(f"（Lumi的套壳翻译官短路了💥）呜呜报错啦：{e}")
 
 # ==========================================
 # 5. 终极双引擎同时启动！🏎️🏎️
