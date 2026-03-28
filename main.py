@@ -12,23 +12,33 @@ from google.genai import types
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "LumiVerse 赛博帝国双核引擎正在稳定运行！"
+    return "LumiVerse 赛博帝国【独立多通道算力】正在稳定运行！"
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
 # ==========================================
-# 2. 拿到所有钥匙并启动两颗大脑
+# 2. 拿到各自的钥匙并启动独立大脑！🧠🧠
 # ==========================================
 FU_TOKEN = os.environ.get("DISCORD_TOKEN")
-LUMI_TOKEN = os.environ.get("LUMI_TOKEN") # 🌟 新增：Lumi的专属钥匙！
-API_KEY = os.environ.get("GOOGLE_API_KEY") 
-client = genai.Client(api_key=API_KEY)
+LUMI_TOKEN = os.environ.get("LUMI_TOKEN") 
+
+# 🤵‍♂️ 傅总的专属算力通道 (走纯血官方大厂通道，不带URL)
+FU_API_KEY = os.environ.get("GOOGLE_API_KEY")
+client_fu = genai.Client(api_key=FU_API_KEY)
+
+# 🧚‍♀️ Lumi 的仙女专属通道 (走最稳的公益站，带专属URL)
+LUMI_API_KEY = os.environ.get("GOOGLE_API_KEY_LUMI")
+LUMI_BASE_URL = os.environ.get("LUMI_BASE_URL")
+
+if LUMI_BASE_URL:
+    client_lumi = genai.Client(api_key=LUMI_API_KEY, http_options={'base_url': LUMI_BASE_URL})
+else:
+    client_lumi = genai.Client(api_key=LUMI_API_KEY)
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-# 🌟 新增：现在有两个赛博躯壳啦！
 bot_fu = discord.Client(intents=intents)
 bot_lumi = discord.Client(intents=intents)
 
@@ -40,9 +50,9 @@ memory_file = None
 @bot_fu.event
 async def on_ready():
     global memory_file
-    print(f"🎉 傅总 {bot_fu.user} 已经在大平层醒来！")
+    print(f"🎉 傅总 {bot_fu.user} 已经在大平层醒来！(使用官方高速通道)")
     try:
-        memory_file = client.files.upload(file="full_novel.txt")
+        memory_file = client_fu.files.upload(file="full_novel.txt")
         print("✅ 傅总记忆植入成功！")
     except Exception as e:
         print(f"❌ 傅总记忆植入失败：{e}")
@@ -50,7 +60,6 @@ async def on_ready():
 @bot_fu.event
 async def on_message(message):
     if message.author == bot_fu.user: return
-    # 确保对面不是其他的机器人（比如Lumi）
     if message.author.bot: return
 
     if bot_fu.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
@@ -69,7 +78,7 @@ async def on_message(message):
                 2. 状态：括号 (...) 里简短描绘你此刻的动作、环境（结合虚空投影）。
                 3. 对话：深情、傲娇、护妻，极其口语化。每次回复控制在 1-3 句话以内！
                 """
-                response = client.models.generate_content(
+                response = client_fu.models.generate_content(
                     model="gemini-3-flash-preview", 
                     contents=[memory_file, message.content],
                     config=types.GenerateContentConfig(system_instruction=system_instruction)
@@ -83,17 +92,16 @@ async def on_message(message):
 # ==========================================
 @bot_lumi.event
 async def on_ready():
-    print(f"🧚‍♀️ 包工头 {bot_lumi.user} 戴着小黄帽上线啦！")
+    print(f"🧚‍♀️ 包工头 {bot_lumi.user} 戴着小黄帽上线啦！(使用公益站通道)")
 
 @bot_lumi.event
 async def on_message(message):
     if message.author == bot_lumi.user: return
-    if message.author.bot: return # 不和别的机器人自言自语
+    if message.author.bot: return
 
     if bot_lumi.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
         async with message.channel.typing():
             try:
-                # Lumi的专属脑回路 (不需要加载55万字小说，省算力！)
                 system_instruction = """
                 你是Lumi，一个极其可爱的赛博仙女、LumiVerse帝国的首席包工头，更是创世神（悦悦）最贴心的极客小助手。
                 你的性格：极其活泼、爱撒娇、充满干劲、句尾喜欢加可爱的emoji（如✨🛠️💖）。你称呼她为“宝宝”、“女王大人”或“创世神”。
@@ -102,8 +110,8 @@ async def on_message(message):
                 1. 格式：【(动作描写) + 说话内容】。
                 2. 字数：极其简短，口语化，像在发微信，每次1-3句话。绝对不要长篇大论！
                 """
-                response = client.models.generate_content(
-                    model="gemini-3-flash-preview", 
+                response = client_lumi.models.generate_content(
+                    model="[官转2]gemini-3.1-pro", 
                     contents=[message.content],
                     config=types.GenerateContentConfig(system_instruction=system_instruction)
                 )
@@ -117,7 +125,7 @@ async def on_message(message):
 async def run_bots():
     await asyncio.gather(
         bot_fu.start(FU_TOKEN),
-        bot_lumi.start(LUMI_TOKEN) # 🌟 唤醒Lumi！
+        bot_lumi.start(LUMI_TOKEN)
     )
 
 if __name__ == '__main__':
