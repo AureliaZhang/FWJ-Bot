@@ -115,7 +115,7 @@ async def on_message(message):
                 
                 # 🌟 极其冷酷的套壳调用！Cherry Studio 里填什么名字，这里就填什么名字！
                 response = await client_lumi.chat.completions.create(
-                    model="[官转2]gemini-3.1-pro",  # 👈 宝宝，把你刚才在 Cherry Studio 里跑通的那个名字直接填在这里！
+                    model="[官转2] gemini-3.1-pro",  # 👈 宝宝，把你刚才在 Cherry Studio 里跑通的那个名字直接填在这里！
                     messages=[
                         {"role": "system", "content": system_instruction},
                         {"role": "user", "content": message.content}
