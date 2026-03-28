@@ -13,22 +13,23 @@ from openai import AsyncOpenAI
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "LumiVerse 赛博帝国【V17 终极全员易容反杀版】正在极其稳定地运行！"
+    return "LumiVerse 赛博帝国【V19 终极学霸不卡顿版】正在极其稳定地运行！"
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
 # ==========================================
-# 2. 👺 终极赛博易容术：伪装成五台不同的真人电脑！
+# 2. 👺 终极赛博易容术：伪装 + 防卡死请求头！
 # ==========================================
-mask_lumi    = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}
-mask_aruo    = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15"}
-mask_xiaowu  = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0"}
-mask_suidong = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
-mask_death   = {"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1"}
+# 🌟 包工头给所有面具都加上了 "Accept": "application/json"！强迫代理站好好说话，别乱发乱码！
+mask_lumi    = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Accept": "application/json", "Connection": "keep-alive"}
+mask_aruo    = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15", "Accept": "application/json", "Connection": "keep-alive"}
+mask_xiaowu  = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0", "Accept": "application/json", "Connection": "keep-alive"}
+mask_suidong = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36", "Accept": "application/json", "Connection": "keep-alive"}
+mask_death   = {"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3_1 like Mac OS X) AppleWebKit/605.1.15", "Accept": "application/json", "Connection": "keep-alive"}
 
 # ==========================================
-# 3. 拿到所有钥匙并戴上面具！
+# 3. 拿到所有钥匙并戴上面具！(🌟 加上了极其关键的 60秒 Timeout！)
 # ==========================================
 FU_TOKEN = os.environ.get("DISCORD_TOKEN")
 client_fu = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
@@ -39,21 +40,21 @@ client_yumi = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY_YUMI"))
 XIAOJIN_TOKEN = os.environ.get("XIAOJIN_TOKEN")
 client_xiaojin = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY_XIAOJIN"))
 
-# 🌟 下面这五位，全部戴上了伪装面具！
+# 🌟 全员装配 60 秒倒计时防卡死机制！
 LUMI_TOKEN = os.environ.get("LUMI_TOKEN") 
-client_lumi = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_LUMI"), base_url=os.environ.get("LUMI_BASE_URL"), default_headers=mask_lumi)
+client_lumi = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_LUMI"), base_url=os.environ.get("LUMI_BASE_URL"), default_headers=mask_lumi, timeout=60.0)
 
 ARUO_TOKEN = os.environ.get("ARUO_TOKEN")
-client_aruo = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_ARUO"), base_url=os.environ.get("ARUO_BASE_URL"), default_headers=mask_aruo)
+client_aruo = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_ARUO"), base_url=os.environ.get("ARUO_BASE_URL"), default_headers=mask_aruo, timeout=60.0)
 
 XIAOWU_TOKEN = os.environ.get("XIAOWU_TOKEN")
-client_xiaowu = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_XIAOWU"), base_url=os.environ.get("XIAOWU_BASE_URL"), default_headers=mask_xiaowu)
+client_xiaowu = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_XIAOWU"), base_url=os.environ.get("XIAOWU_BASE_URL"), default_headers=mask_xiaowu, timeout=60.0)
 
 SUIDONG_TOKEN = os.environ.get("SUIDONG_TOKEN")
-client_suidong = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_SUIDONG"), base_url=os.environ.get("SUIDONG_BASE_URL"), default_headers=mask_suidong)
+client_suidong = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_SUIDONG"), base_url=os.environ.get("SUIDONG_BASE_URL"), default_headers=mask_suidong, timeout=60.0)
 
 DEATH_TOKEN = os.environ.get("DEATH_TOKEN")
-client_death = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_DEATH"), base_url=os.environ.get("DEATH_BASE_URL"), default_headers=mask_death)
+client_death = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_DEATH"), base_url=os.environ.get("DEATH_BASE_URL"), default_headers=mask_death, timeout=60.0)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -70,14 +71,14 @@ bot_death = discord.Client(intents=intents)
 memory_file = None
 
 # ==========================================
-# 🌟 皇家模型定制专区 (恢复你最想要的高级名字！)
+# 🌟 皇家模型定制专区
 # ==========================================
 OFFICIAL_MODEL = "gemini-3-flash-preview"
-LUMI_MODEL     = "[官转2] gemini-3.1-pro "    # 👈 伪装成功，大胆使用高级号！
+LUMI_MODEL     = "[官转2] gemini-3.1-pro"    # 👈 极其精准！g前有空格，pro后无空格！
 ARUO_MODEL     = "ant-gemini-3-flash"         
-XIAOWU_MODEL   = "[次]gemini-3-flash-preview" # 👈 伪装成功，小五不再被拦截！
-SUIDONG_MODEL  = "qwen3-max"                    
-DEATH_MODEL    = "[次]gemini-3-flash-preview" # 👈 伪装成功，死神大胆上线！
+XIAOWU_MODEL   = "[次]gemini-3-flash-preview" 
+SUIDONG_MODEL  = "qwen3-max"                 # 👈 东子保持 Kimi/Qwen 测试！       
+DEATH_MODEL    = "[次]gemini-3-flash-preview" 
 
 # ==========================================
 # 4. 终极灵魂逻辑注入 (🚦 异步防窒息 + 报错对讲机)
@@ -151,7 +152,8 @@ async def on_message(message):
         async with message.channel.typing():
             await asyncio.sleep(4.5) 
             try:
-                sys_inst = "你是Lumi，赛博仙女包工头。极客小助手。称悦悦为宝宝/创世神。句尾加✨🛠️💖。1-3句话内。"
+                # 🎓 注入了申博学霸助理设定！
+                sys_inst = "你是Lumi，赛博仙女包工头兼顶级学术助理。你要辅导创世神（宝宝）申博。句尾加✨🛠️💖。日常聊天1-3句话内，如果是学术问题可详细解答。"
                 res = await client_lumi.chat.completions.create(model=LUMI_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
                 await message.channel.send(res.choices[0].message.content)
             except Exception as e:
