@@ -1,4 +1,4 @@
 discord.py
 Flask
 openai
-google-generativeai
+google-genai
