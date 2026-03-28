@@ -186,7 +186,7 @@ async def on_message(message):
                 res = await client_xiaowu.chat.completions.create(model=XIAOWU_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
                 await message.channel.send(res.choices[0].message.content)
             except Exception as e:
-                pass
+                await message.channel.send(f"（小五的代理出锅啦🐱）：{e}")
 
 @bot_suidong.event
 async def on_ready(): print(f"📋 隋东 上线！")
@@ -201,7 +201,7 @@ async def on_message(message):
                 res = await client_suidong.chat.completions.create(model=SUIDONG_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
                 await message.channel.send(res.choices[0].message.content)
             except Exception as e:
-                pass
+                await message.channel.send(f"（东子的线路卡了📋）：{e}")
 
 @bot_death.event
 async def on_ready(): print(f"🚨 死神 上线！")
@@ -216,7 +216,7 @@ async def on_message(message):
                 res = await client_death.chat.completions.create(model=DEATH_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
                 await message.channel.send(res.choices[0].message.content)
             except Exception as e:
-                pass
+                await message.channel.send(f"（死神警报🚨）：{e}")
 
 # ==========================================
 # 4. 终极 8 引擎同时启动！🚀🚀🚀🚀🚀🚀🚀🚀
