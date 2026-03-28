@@ -111,7 +111,7 @@ async def on_message(message):
                 2. 字数：极其简短，口语化，像在发微信，每次1-3句话。绝对不要长篇大论！
                 """
                 response = client_lumi.models.generate_content(
-                    model="[官转2]gemini-3.1-pro", 
+                    model="gemini-3.1-pro", 
                     contents=[message.content],
                     config=types.GenerateContentConfig(system_instruction=system_instruction)
                 )
