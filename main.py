@@ -76,7 +76,7 @@ OFFICIAL_MODEL = "gemini-3-flash-preview"
 LUMI_MODEL     = "[官转2] gemini-3.1-pro "    # 👈 伪装成功，大胆使用高级号！
 ARUO_MODEL     = "ant-gemini-3-flash"         
 XIAOWU_MODEL   = "[次]gemini-3-flash-preview" # 👈 伪装成功，小五不再被拦截！
-SUIDONG_MODEL  = "kimi-k2"                    
+SUIDONG_MODEL  = "qwen3-max"                    
 DEATH_MODEL    = "[次]gemini-3-flash-preview" # 👈 伪装成功，死神大胆上线！
 
 # ==========================================
