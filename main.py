@@ -77,7 +77,7 @@ OFFICIAL_MODEL = "gemini-3-flash-preview"
 LUMI_MODEL     = "[官转2] gemini-3.1-pro"    # 👈 极其精准！g前有空格，pro后无空格！
 ARUO_MODEL     = "ant-gemini-3-flash"         
 XIAOWU_MODEL   = "[次]gemini-3-flash-preview" 
-SUIDONG_MODEL  = "deepseek-v3.2"                 # 👈 东子保持 Kimi/Qwen 测试！       
+SUIDONG_MODEL  = "gemini-3-flash-preview"                 # 👈 东子保持 Kimi/Qwen 测试！       
 DEATH_MODEL    = "[次]gemini-3-flash-preview" 
 
 # ==========================================
