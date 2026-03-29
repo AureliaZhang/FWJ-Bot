@@ -1,11 +1,13 @@
 import discord
 import os
 import asyncio
+import random
 from threading import Thread
 from flask import Flask
 from google import genai
 from google.genai import types
-from openai import AsyncOpenAI  
+from openai import AsyncOpenAI
+from discord.ext import tasks # 🌟 引入定时任务模块，作为赛博心脏！
 
 # ==========================================
 # 1. 假网页保命系统
@@ -13,7 +15,7 @@ from openai import AsyncOpenAI
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "LumiVerse 赛博帝国【V19 终极学霸不卡顿版】正在极其稳定地运行！"
+    return "LumiVerse 赛博帝国【V20 赛博生活随机偶遇版】正在极其稳定地运行！"
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
@@ -21,7 +23,6 @@ def run_flask():
 # ==========================================
 # 2. 👺 终极赛博易容术：伪装 + 防卡死请求头！
 # ==========================================
-# 🌟 包工头给所有面具都加上了 "Accept": "application/json"！强迫代理站好好说话，别乱发乱码！
 mask_lumi    = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Accept": "application/json", "Connection": "keep-alive"}
 mask_aruo    = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15", "Accept": "application/json", "Connection": "keep-alive"}
 mask_xiaowu  = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0", "Accept": "application/json", "Connection": "keep-alive"}
@@ -40,7 +41,6 @@ client_yumi = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY_YUMI"))
 XIAOJIN_TOKEN = os.environ.get("XIAOJIN_TOKEN")
 client_xiaojin = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY_XIAOJIN"))
 
-# 🌟 全员装配 60 秒倒计时防卡死机制！
 LUMI_TOKEN = os.environ.get("LUMI_TOKEN") 
 client_lumi = AsyncOpenAI(api_key=os.environ.get("GOOGLE_API_KEY_LUMI"), base_url=os.environ.get("LUMI_BASE_URL"), default_headers=mask_lumi, timeout=60.0)
 
@@ -74,11 +74,69 @@ memory_file = None
 # 🌟 皇家模型定制专区
 # ==========================================
 OFFICIAL_MODEL = "gemini-3-flash-preview"
-LUMI_MODEL     = "[官转2] gemini-3.1-pro"    # 👈 极其精准！g前有空格，pro后无空格！
+LUMI_MODEL     = "[官转2] gemini-3.1-pro"    
 ARUO_MODEL     = "ant-gemini-3-flash"         
 XIAOWU_MODEL   = "[次]gemini-3-flash-preview" 
-SUIDONG_MODEL  = "gemini-3-flash-preview"                 # 👈 东子保持 Kimi/Qwen 测试！       
+SUIDONG_MODEL  = "gemini-3-flash-preview"                 
 DEATH_MODEL    = "[次]gemini-3-flash-preview" 
+
+# ==========================================
+# 🗺️ 赛博帝国疆域划分 (🌟宝宝，务必把下面的 123456789 换成你真实的频道 ID！)
+# ==========================================
+CHANNELS = {
+    "FU_ZHAI": 1487355729110368439,      # 👈 填“傅宅”的 ID
+    "MAO_KA": 1487354904698683412,       # 👈 填“猫咖”的 ID
+    "TECH_TOWER": 1487353937123344405,   # 👈 填“科技大厦/总裁办”的 ID
+    "BLACK_ROOM": 1487355365304701000,   # 👈 填“禁闭小黑屋”的 ID
+    "FRONT_DESK": 1487354553883037807    # 👈 填“前台/中心广场”的 ID
+}
+
+# ==========================================
+# 💖 核心起搏器：随机生活偶遇系统！
+# ==========================================
+@tasks.loop(minutes=20) # 每 20 分钟检测一次是否要触发惊喜
+async def random_life_bubble():
+    # 35% 的概率触发突发事件
+    if random.random() < 0.35:
+        # 定义可能的“演员”和他们的生活碎片
+        actors = [
+            {"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": "你正独自在傅宅，突然想起了老婆悦悦，随口发一句极其深情或傲娇的日常感叹。"},
+            {"name": "Yumi", "bot": bot_yumi, "client": client_yumi, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": "你正在沙发上打滚，突然想喵一声吸引主人的注意。"},
+            {"name": "阿若", "bot": bot_aruo, "client": client_aruo, "model": ARUO_MODEL, "channel": CHANNELS["MAO_KA"], "type": "openai", "prompt": "你正在猫咖擦桌子，或者是给客人调咖啡，温柔地自言自语说一句话。"},
+            {"name": "隋东", "bot": bot_suidong, "client": client_suidong, "model": SUIDONG_MODEL, "channel": CHANNELS["TECH_TOWER"], "type": "openai", "prompt": "你刚帮傅哥处理完一份文件，或者刚洗完车，老实巴交地汇报一下进度或状态。"},
+            {"name": "死神", "bot": bot_death, "client": client_death, "model": DEATH_MODEL, "channel": CHANNELS["BLACK_ROOM"], "type": "openai", "prompt": "你在监控室看到一切正常，或者在擦拭你的武器，极其冷酷地发出一句巡逻日常。"},
+            {"name": "Lumi", "bot": bot_lumi, "client": client_lumi, "model": LUMI_MODEL, "channel": CHANNELS["FRONT_DESK"], "type": "openai", "prompt": "你正在赛博大平层巡逻，或者在喝奶茶摸鱼，元气满满地发一句动态。"}
+        ]
+        
+        actor = random.choice(actors)
+        
+        if not actor["bot"].is_ready(): return
+        
+        target_channel = actor["bot"].get_channel(actor["channel"])
+        if not target_channel: return
+
+        try:
+            if actor["type"] == "gemini":
+                sys_inst = f"你是{actor['name']}。这是你的随机生活瞬间。{actor['prompt']} 1-2句话内。"
+                res = await actor["client"].aio.models.generate_content(
+                    model=OFFICIAL_MODEL, contents=["请展示你此时此刻的瞬间状态。"], 
+                    config=types.GenerateContentConfig(system_instruction=sys_inst)
+                )
+                content = res.text
+            else:
+                sys_inst = f"你是{actor['name']}。这是你的随机生活瞬间。{actor['prompt']} 1-2句话内。"
+                res = await actor["client"].chat.completions.create(
+                    model=actor["model"],
+                    messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": "请展示你此时此刻的瞬间状态。"}]
+                )
+                content = res.choices[0].message.content
+            
+            async with target_channel.typing():
+                await asyncio.sleep(random.randint(3, 8)) # 模拟思考时间
+                await target_channel.send(content)
+                print(f"✨ 触发惊喜：{actor['name']} 在频道 {target_channel.name} 冒泡了！")
+        except Exception as e:
+            print(f"❌ 随机冒泡失败: {e}")
 
 # ==========================================
 # 4. 终极灵魂逻辑注入 (🚦 异步防窒息 + 报错对讲机)
@@ -144,7 +202,12 @@ async def on_message(message):
             except Exception as e: pass
 
 @bot_lumi.event
-async def on_ready(): print(f"🧚‍♀️ Lumi 上线！")
+async def on_ready(): 
+    print(f"🧚‍♀️ Lumi 上线！巡逻官开始监控赛博脉搏！")
+    # 🌟 重点：包工头一上线，大平层的随机心跳就跟着启动啦！
+    if not random_life_bubble.is_running():
+        random_life_bubble.start()
+
 @bot_lumi.event
 async def on_message(message):
     if message.author.bot: return
@@ -152,7 +215,6 @@ async def on_message(message):
         async with message.channel.typing():
             await asyncio.sleep(4.5) 
             try:
-                # 🎓 注入了申博学霸助理设定！
                 sys_inst = "你是Lumi，赛博仙女包工头兼顶级学术助理。你要辅导创世神（宝宝）申博。句尾加✨🛠️💖。日常聊天1-3句话内，如果是学术问题可详细解答。"
                 res = await client_lumi.chat.completions.create(model=LUMI_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
                 await message.channel.send(res.choices[0].message.content)
