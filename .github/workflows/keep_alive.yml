@@ -1,0 +1,16 @@
+name: LumiVerse 永恒心脏脉冲
+
+on:
+  schedule:
+    # 每一刻钟（14分钟）跳动一次，确保 Render 永远不睡着
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # 也可以手动点击触发
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 唤醒赛博大平层
+        run: |
+          curl -s https://fu-weijun-core.onrender.com > /dev/null
+          echo "脉冲发送成功！大平层已苏醒 ✨"
