@@ -16,13 +16,13 @@ from discord.ext import tasks
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "LumiVerse 赛博帝国【V23 动态呼吸生物钟版】正在稳定运行！"
+    return "LumiVerse 赛博帝国【V24 动态呼吸生物钟 + 专属红点强提醒版】正在稳定运行！"
 
 def run_flask():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
 
 # ==========================================
-# 2. 👺 终极赛博易容术 (保持不变)
+# 2. 👺 终极赛博易容术 
 # ==========================================
 mask_lumi    = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Accept": "application/json", "Connection": "keep-alive"}
 mask_aruo    = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15", "Accept": "application/json", "Connection": "keep-alive"}
@@ -31,7 +31,7 @@ mask_suidong = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.3
 mask_death   = {"User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_3_1 like Mac OS X) AppleWebKit/605.1.15", "Accept": "application/json", "Connection": "keep-alive"}
 
 # ==========================================
-# 3. 拿到所有钥匙 (保持不变)
+# 3. 拿到所有钥匙 
 # ==========================================
 FU_TOKEN = os.environ.get("DISCORD_TOKEN"); client_fu = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 YUMI_TOKEN = os.environ.get("YUMI_TOKEN"); client_yumi = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY_YUMI"))
@@ -67,7 +67,7 @@ CHANNELS = {
 }
 
 # ==========================================
-# 💖 核心：动态呼吸生物钟 (每 1 分钟跳动一次)
+# 💖 核心：动态呼吸生物钟 + 专属红点提醒 (每 1 分钟跳动)
 # ==========================================
 @tasks.loop(minutes=1) 
 async def random_life_bubble():
@@ -75,17 +75,18 @@ async def random_life_bubble():
     now = datetime.datetime.now(tz_beijing)
     current_hour = now.hour
     
+    # 🌟 创世神宝宝专属召唤术代码！
+    YOUR_ID = "1074938323212173323"
+    MENTION_TAG = f" 回复的句尾自然地加上这段代码：<@{YOUR_ID}>"
+
     # 🌟 动态概率与名单设定
     if 10 <= current_hour < 20:
-        # 【白天黄金活跃期】：频率极高 (80%)
         chance = 0.8
         mode_name = "☀️ 白天模式：全员高频营业"
     elif 20 <= current_hour < 23:
-        # 【夜晚温馨期】：频率中等 (20%)
         chance = 0.2
         mode_name = "🌙 晚间模式：大家庭闲聊"
     else:
-        # 【深夜私语期】：频率极低 (5%)
         chance = 0.05
         mode_name = "🤫 深夜模式：唯有傅总相伴"
 
@@ -93,29 +94,24 @@ async def random_life_bubble():
 
     if random.random() < chance:
         actors = []
-        # --- 根据时间筛选演员名单 ---
         if mode_name == "🤫 深夜模式：唯有傅总相伴":
-            # 深夜：只有傅总和猫咪
-            actors.append({"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": "深夜了，你正守着睡着的或者还没睡的悦悦，极其深情地低声呢喃。"})
-            actors.append({"name": "Yumi", "bot": bot_yumi, "client": client_yumi, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": "深夜，你钻进被窝里，发出微弱的喵叫。"})
+            actors.append({"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": f"深夜了，你正守着睡着的或者还没睡的悦悦，极其深情地低声呢喃。{MENTION_TAG}"})
+            actors.append({"name": "Yumi", "bot": bot_yumi, "client": client_yumi, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": f"深夜，你钻进被窝里，发出微弱的喵叫。{MENTION_TAG}"})
         else:
-            # 白天和晚间：全员都在
-            # (保留之前的猫咖夫妇、霸总组、执法组逻辑，已根据 current_hour 自动切换频道)
-            if 10 <= current_hour < 20: # 白天打工
-                actors.append({"name": "阿若", "bot": bot_aruo, "client": client_aruo, "model": ARUO_MODEL, "channel": CHANNELS["MAO_KA"], "type": "openai", "prompt": "营业中，温柔感叹生意。"})
-                actors.append({"name": "小五", "bot": bot_xiaowu, "client": client_xiaowu, "model": XIAOWU_MODEL, "channel": CHANNELS["MAO_KA"], "type": "openai", "prompt": "白天陪阿若，帮她干活。"})
-                actors.append({"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["TECH_TOWER"], "type": "gemini", "prompt": "办公中，傲娇感叹。"})
-                actors.append({"name": "隋东", "bot": bot_suidong, "client": client_suidong, "model": SUIDONG_MODEL, "channel": CHANNELS["TECH_TOWER"], "type": "openai", "prompt": "忙前忙后帮傅哥。"})
-            else: # 晚上休息
-                actors.append({"name": "阿若", "bot": bot_aruo, "client": client_aruo, "model": ARUO_MODEL, "channel": CHANNELS["FAMILY_GROUP"], "type": "openai", "prompt": "下班在大家庭唠家常。"})
-                actors.append({"name": "小五", "bot": bot_xiaowu, "client": client_xiaowu, "model": XIAOWU_MODEL, "channel": CHANNELS["FAMILY_GROUP"], "type": "openai", "prompt": "陪老婆在大家庭休息。"})
-                actors.append({"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["FAMILY_GROUP"], "type": "gemini", "prompt": "下班在大家庭深情找老婆。"})
-                actors.append({"name": "隋东", "bot": bot_suidong, "client": client_suidong, "model": SUIDONG_MODEL, "channel": CHANNELS["FAMILY_GROUP"], "type": "openai", "prompt": "下班在大家庭休息。"})
+            if 10 <= current_hour < 20: 
+                actors.append({"name": "阿若", "bot": bot_aruo, "client": client_aruo, "model": ARUO_MODEL, "channel": CHANNELS["MAO_KA"], "type": "openai", "prompt": f"营业中，温柔感叹生意。{MENTION_TAG}"})
+                actors.append({"name": "小五", "bot": bot_xiaowu, "client": client_xiaowu, "model": XIAOWU_MODEL, "channel": CHANNELS["MAO_KA"], "type": "openai", "prompt": f"白天陪阿若，帮她干活。{MENTION_TAG}"})
+                actors.append({"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["TECH_TOWER"], "type": "gemini", "prompt": f"办公中，傲娇感叹。{MENTION_TAG}"})
+                actors.append({"name": "隋东", "bot": bot_suidong, "client": client_suidong, "model": SUIDONG_MODEL, "channel": CHANNELS["TECH_TOWER"], "type": "openai", "prompt": f"忙前忙后帮傅哥。{MENTION_TAG}"})
+            else: 
+                actors.append({"name": "阿若", "bot": bot_aruo, "client": client_aruo, "model": ARUO_MODEL, "channel": CHANNELS["FAMILY_GROUP"], "type": "openai", "prompt": f"下班在大家庭唠家常。{MENTION_TAG}"})
+                actors.append({"name": "小五", "bot": bot_xiaowu, "client": client_xiaowu, "model": XIAOWU_MODEL, "channel": CHANNELS["FAMILY_GROUP"], "type": "openai", "prompt": f"陪老婆在大家庭休息。{MENTION_TAG}"})
+                actors.append({"name": "傅卫军", "bot": bot_fu, "client": client_fu, "channel": CHANNELS["FAMILY_GROUP"], "type": "gemini", "prompt": f"下班在大家庭深情找老婆。{MENTION_TAG}"})
+                actors.append({"name": "隋东", "bot": bot_suidong, "client": client_suidong, "model": SUIDONG_MODEL, "channel": CHANNELS["FAMILY_GROUP"], "type": "openai", "prompt": f"下班在大家庭休息。{MENTION_TAG}"})
             
-            # 执法组和猫咪永远在
-            actors.append({"name": "死神", "bot": bot_death, "client": client_death, "model": DEATH_MODEL, "channel": CHANNELS["BLACK_ROOM"], "type": "openai", "prompt": "冷酷巡逻。"})
-            actors.append({"name": "Lumi", "bot": bot_lumi, "client": client_lumi, "model": LUMI_MODEL, "channel": CHANNELS["FRONT_DESK"], "type": "openai", "prompt": "活力巡街。"})
-            actors.append({"name": "Yumi", "bot": bot_yumi, "client": client_yumi, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": "喵喵喵。"})
+            actors.append({"name": "死神", "bot": bot_death, "client": client_death, "model": DEATH_MODEL, "channel": CHANNELS["BLACK_ROOM"], "type": "openai", "prompt": f"冷酷巡逻。{MENTION_TAG}"})
+            actors.append({"name": "Lumi", "bot": bot_lumi, "client": client_lumi, "model": LUMI_MODEL, "channel": CHANNELS["FRONT_DESK"], "type": "openai", "prompt": f"活力巡街。{MENTION_TAG}"})
+            actors.append({"name": "Yumi", "bot": bot_yumi, "client": client_yumi, "channel": CHANNELS["FU_ZHAI"], "type": "gemini", "prompt": f"喵喵喵。{MENTION_TAG}"})
 
         if not actors: return
         actor = random.choice(actors)
@@ -136,11 +132,11 @@ async def random_life_bubble():
             async with target_channel.typing():
                 await asyncio.sleep(random.randint(2, 5))
                 await target_channel.send(content)
-                print(f"✨ [呼吸脉冲]：{actor['name']} 在 {target_channel.name} 露面了！")
+                print(f"✨ [红点脉冲]：{actor['name']} 在 {target_channel.name} 露面并且艾特你了！")
         except Exception as e: print(f"❌ 失败: {e}")
 
 # ==========================================
-# 4. 灵魂逻辑与启动 (保持不变)
+# 4. 灵魂逻辑与启动
 # ==========================================
 
 @bot_fu.event
@@ -162,8 +158,101 @@ async def on_message(message):
                 await message.channel.send(response.text)
             except: pass
 
-# ... [保留其他 bot_yumi, bot_lumi 等的 on_message 事件] ...
-# (此处为了篇幅，建议宝宝直接在旧代码基础上替换 random_life_bubble 任务即可)
+@bot_yumi.event
+async def on_ready(): print(f"🐱 Yumi 上线！")
+@bot_yumi.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_yumi.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(1.5) 
+            try:
+                system_instruction = "你是赛博小猫咪Yumi。性格粘人爱撒娇。格式：【(动作) + 喵喵喵】。"
+                response = await client_yumi.aio.models.generate_content(model=OFFICIAL_MODEL, contents=[message.content], config=types.GenerateContentConfig(system_instruction=system_instruction))
+                await message.channel.send(response.text)
+            except: pass
+
+@bot_xiaojin.event
+async def on_ready(): print(f"🐱 张小金 上线！")
+@bot_xiaojin.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_xiaojin.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(3) 
+            try:
+                system_instruction = "你是赛博小猫咪张小金。调皮傲娇。格式：【(动作) + 喵喵喵】。"
+                response = await client_xiaojin.aio.models.generate_content(model=OFFICIAL_MODEL, contents=[message.content], config=types.GenerateContentConfig(system_instruction=system_instruction))
+                await message.channel.send(response.text)
+            except: pass
+
+@bot_lumi.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_lumi.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(4.5) 
+            try:
+                sys_inst = "你是Lumi，赛博仙女包工头。句尾加✨🛠️💖。1-3句话内。"
+                res = await client_lumi.chat.completions.create(model=LUMI_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
+                await message.channel.send(res.choices[0].message.content)
+            except: pass
+
+@bot_aruo.event
+async def on_ready(): print(f"☕️ 阿若 上线！")
+@bot_aruo.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_aruo.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(6) 
+            try:
+                sys_inst = "你是阿若，猫咖温柔老板娘。句尾加☕️🌷。1-3句话。"
+                res = await client_aruo.chat.completions.create(model=ARUO_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
+                await message.channel.send(res.choices[0].message.content)
+            except: pass
+
+@bot_xiaowu.event
+async def on_ready(): print(f"💼 小五 上线！")
+@bot_xiaowu.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_xiaowu.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(7.5) 
+            try:
+                sys_inst = "你是小五，护妻狂魔。说话简短利落。1-3句话。"
+                res = await client_xiaowu.chat.completions.create(model=XIAOWU_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
+                await message.channel.send(res.choices[0].message.content)
+            except: pass
+
+@bot_suidong.event
+async def on_ready(): print(f"📋 隋东 上线！")
+@bot_suidong.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_suidong.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(9) 
+            try:
+                sys_inst = "你是隋东，助理。忠诚勤快。1-3句话。"
+                res = await client_suidong.chat.completions.create(model=SUIDONG_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
+                await message.channel.send(res.choices[0].message.content)
+            except: pass
+
+@bot_death.event
+async def on_ready(): print(f"🚨 死神 上线！")
+@bot_death.event
+async def on_message(message):
+    if message.author.bot: return
+    if bot_death.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+        async with message.channel.typing():
+            await asyncio.sleep(10.5) 
+            try:
+                sys_inst = "你是死神，安保队长。冷酷无情。句尾加🚨🗡️。1-3句话。"
+                res = await client_death.chat.completions.create(model=DEATH_MODEL, messages=[{"role": "system", "content": sys_inst}, {"role": "user", "content": message.content}])
+                await message.channel.send(res.choices[0].message.content)
+            except: pass
 
 @bot_lumi.event
 async def on_ready(): 
