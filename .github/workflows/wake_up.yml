@@ -1,0 +1,12 @@
+name: Keep Render Alive 🌙
+on:
+  schedule:
+    - cron: '*/12 * * * *' # 🌟 每隔 12 分钟自动敲一次门，精准卡在 15 分钟休眠前！
+  workflow_dispatch: # 允许我们手动测试
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Render
+        # 这一句就是核心魔法：悄悄访问一下网址，但不留下任何痕迹
+        run: curl -s ${{ secrets.RENDER_URL }} > /dev/null
